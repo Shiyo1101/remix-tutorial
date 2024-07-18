@@ -8,7 +8,7 @@ const Contact = () => {
   const contact = {
     first: "Uchida",
     last: "Yoshiki",
-    avatar: "https://placekitten.com/200/200",
+    avatar: "/avatar.png",
     twitter: "sabaepc_with",
     notes: "Some notes",
     favorite: true,
