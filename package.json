@@ -8,7 +8,9 @@
     "dev": "remix vite:dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "remix-serve build/server/index.js",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "format": "prettier --check ./**/*.{ts,tsx}",
+    "format-run": "npx prettier --write ./**/*.{ts,tsx}"
   },
   "dependencies": {
     "@remix-run/node": "^2.10.3",
@@ -18,7 +20,7 @@
     "match-sorter": "^6.3.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sort-by": "^1.2.0",
+    "sort-by": "^0.0.2",
     "tiny-invariant": "^1.3.1"
   },
   "devDependencies": {
@@ -33,6 +35,7 @@
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.3.3",
     "typescript": "^5.1.6",
     "vite": "^5.1.4",
     "vite-tsconfig-paths": "^4.3.1"
