@@ -1,31 +1,39 @@
 import {
   Form,
   json,
-  Link,
   Links,
   Meta,
+  NavLink,
   Outlet,
+  redirect,
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useNavigation,
 } from "@remix-run/react";
 
 import appStylesHref from "./app.css?url";
 import { LinksFunction } from "@remix-run/node";
 
-import { getContacts } from "./data";
+import { createEmptyContact, getContacts } from "./data";
 
 export const loader = async () => {
   const contacts = await getContacts();
-  return json({contacts});
-}
+  return json({ contacts });
+};
 
 export const links: LinksFunction = () => [
-  {rel: "stylesheet", href: appStylesHref}
-]
+  { rel: "stylesheet", href: appStylesHref },
+];
+
+export const action = async () => {
+  const contact = await createEmptyContact();
+  return redirect(`/contacts/${contact.id}/edit`);
+};
 
 export default function App() {
-  const {contacts} = useLoaderData<typeof loader>();
+  const { contacts } = useLoaderData<typeof loader>();
+  const navigation = useNavigation();
 
   return (
     <html lang="en">
@@ -58,7 +66,12 @@ export default function App() {
               <ul>
                 {contacts.map((contact) => (
                   <li key={contact.id}>
-                    <Link to={`contacts/${contact.id}`}>
+                    <NavLink
+                      className={({ isActive, isPending }) =>
+                        isActive ? "active" : isPending ? "pending" : ""
+                      }
+                      to={`contacts/${contact.id}`}
+                    >
                       {contact.first || contact.last ? (
                         <>
                           {contact.first} {contact.last}
@@ -66,10 +79,8 @@ export default function App() {
                       ) : (
                         <i>名前なし</i>
                       )}{" "}
-                      {contact.favorite ? (
-                        <span>★</span>
-                      ) : null}
-                    </Link>
+                      {contact.favorite ? <span>★</span> : null}
+                    </NavLink>
                   </li>
                 ))}
               </ul>
@@ -80,7 +91,10 @@ export default function App() {
             )}
           </nav>
         </div>
-        <div id="detail">
+        <div
+          id="detail"
+          className={navigation.state === "loading" ? "loading" : ""}
+        >
           <Outlet />
         </div>
         <ScrollRestoration />
