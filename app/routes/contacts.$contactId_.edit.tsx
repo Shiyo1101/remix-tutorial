@@ -1,14 +1,11 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Form, redirect, useLoaderData } from "@remix-run/react";
+import { Form, redirect, useLoaderData, useNavigate } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { getContact, updateContact } from "../data";
 
-export const action = async ({
-  params,
-  request,
-}: ActionFunctionArgs) => {
+export const action = async ({ params, request }: ActionFunctionArgs) => {
   invariant(params.contactId, "Missing contactId param");
   const formData = await request.formData();
   const updates = Object.fromEntries(formData);
@@ -16,9 +13,7 @@ export const action = async ({
   return redirect(`/contacts/${params.contactId}`);
 };
 
-export const loader = async ({
-  params,
-}: LoaderFunctionArgs) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   invariant(params.contactId, "Missing contactId param");
   const contact = await getContact(params.contactId);
   if (!contact) {
@@ -29,6 +24,7 @@ export const loader = async ({
 
 export default function EditContact() {
   const { contact } = useLoaderData<typeof loader>();
+  const navigate = useNavigate();
 
   return (
     <Form key={contact.id} id="contact-form" method="post">
@@ -70,17 +66,13 @@ export default function EditContact() {
       </label>
       <label>
         <span>メモ</span>
-        <textarea
-          defaultValue={contact.notes}
-          name="notes"
-          rows={6}
-        />
+        <textarea defaultValue={contact.notes} name="notes" rows={6} />
       </label>
       <p>
         <button type="submit">保存</button>
-        <button type="button" onClick={() => {
-          return redirect('/');
-        }}>キャンセル</button>
+        <button type="button" onClick={() => navigate(-1)}>
+          キャンセル
+        </button>
       </p>
     </Form>
   );

@@ -13,13 +13,16 @@ import {
 } from "@remix-run/react";
 
 import appStylesHref from "./app.css?url";
-import { LinksFunction } from "@remix-run/node";
+import { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 
 import { createEmptyContact, getContacts } from "./data";
+import { useEffect } from "react";
 
-export const loader = async () => {
-  const contacts = await getContacts();
-  return json({ contacts });
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const url = new URL(request.url);
+  const q = url.searchParams.get("q");
+  const contacts = await getContacts(q);
+  return json({ contacts, q });
 };
 
 export const links: LinksFunction = () => [
@@ -32,8 +35,15 @@ export const action = async () => {
 };
 
 export default function App() {
-  const { contacts } = useLoaderData<typeof loader>();
+  const { contacts, q } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const searchFields = document.getElementById("q");
+    if (searchFields instanceof HTMLInputElement) {
+      searchFields.value = q || "";
+    }
+  }, [q]);
 
   return (
     <html lang="en">
@@ -52,6 +62,7 @@ export default function App() {
                 id="q"
                 aria-label="Search contacts"
                 placeholder="Search"
+                defaultValue={q || ""}
                 type="search"
                 name="q"
               />

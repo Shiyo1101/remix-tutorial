@@ -7,18 +7,17 @@ import type { ContactRecord } from "../data";
 
 import { getContact } from "../data";
 
-export const loader = async ({ params, } : LoaderFunctionArgs) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   invariant(params.contactId, "Missing contactId param");
   const contact = await getContact(params.contactId);
   if (!contact) {
-    throw new Response("Not Found", {status: 404});
+    throw new Response("Not Found", { status: 404 });
   }
   return json({ contact });
 };
 
-
 const Contact = () => {
-  const {contact} = useLoaderData<typeof loader>();
+  const { contact } = useLoaderData<typeof loader>();
 
   return (
     <div id="contact">
@@ -29,7 +28,7 @@ const Contact = () => {
           src={contact.avatar}
         />
       </div>
- 
+
       <div>
         <h1>
           {contact.first || contact.last ? (
@@ -41,30 +40,28 @@ const Contact = () => {
           )}{" "}
           <Favorite contact={contact} />
         </h1>
- 
+
         {contact.twitter ? (
           <p>
-            <a
-              href={`https://twitter.com/${contact.twitter}`}
-            >
+            <a href={`https://twitter.com/${contact.twitter}`}>
               {contact.twitter}
             </a>
           </p>
         ) : null}
- 
+
         {contact.notes ? <p>{contact.notes}</p> : null}
- 
+
         <div>
           <Form action="edit">
             <button type="submit">Edit</button>
           </Form>
- 
+
           <Form
             action="destroy"
             method="post"
             onSubmit={(event) => {
               const response = confirm(
-                "Please confirm you want to delete this record."
+                "このレコードを削除してもよろしですか？"
               );
               if (!response) {
                 event.preventDefault();
@@ -76,22 +73,18 @@ const Contact = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const Favorite: FunctionComponent<{
   contact: Pick<ContactRecord, "favorite">;
 }> = ({ contact }) => {
   const favorite = contact.favorite;
- 
+
   return (
     <Form method="post">
       <button
-        aria-label={
-          favorite
-            ? "Remove from favorites"
-            : "Add to favorites"
-        }
+        aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
         name="favorite"
         value={favorite ? "false" : "true"}
       >
@@ -101,4 +94,4 @@ const Favorite: FunctionComponent<{
   );
 };
 
-export default Contact
+export default Contact;
